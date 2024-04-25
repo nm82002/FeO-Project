@@ -1,0 +1,33 @@
+#First order script for 250 nm
+
+mask= (xdata>= 0) & (xdata<= 4)
+xnew= xdata[mask]
+ynew=y250[mask]
+
+#Plot the data 250 nm
+plt.figure(1, dpi=120)
+plt.title("250 nm Plot") #change title
+plt.xlabel("time(s)")
+plt.ylabel("\u0394A")
+plt.xlim(-0.01, 4) #change to fit data
+plt.ylim(-0.06,0) #change to fit data
+plt.scatter(xnew, ynew, s=1, label= "250 nm") #change label
+
+#Define the function 
+def func(x, k, a0, a1):
+    
+    return -a0*np.exp(-k*x)-a1 #change symbol of k, a0, and a1 as necessary
+
+#evaluate and plot
+functdata=func(xnew, 0.3958168,  0.0427989,  0.00947198)
+plt.plot(xnew, functdata, label="Model")
+plt.legend
+
+#curve fit data to model
+popt, pcov=curve_fit(func, xnew, ynew, bounds=(0, 4)) #adjust y values
+perr=np.sqrt(np.diag(pcov))
+print(popt)
+print(perr)
+
+
+plt.show()
