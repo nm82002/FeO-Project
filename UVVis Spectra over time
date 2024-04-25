@@ -1,0 +1,31 @@
+#Define Data Values
+exampledata=np.array(df[1:], dtype=np.single)
+xdata= [x for x in range(200, 601, 5)]
+t0= exampledata[:,0]
+t30= exampledata[:,1]
+t60= exampledata[:,2]
+t90= exampledata[:,3]
+t120= exampledata[:,4]
+t150= exampledata[:,5]
+t180= exampledata[:,6]
+t210= exampledata[:,7]
+t240= exampledata[:,8]
+t270= exampledata[:,9]
+
+#Assemble Plot
+plt.figure(1, dpi=120)
+plt.title("Change in absorbance over time ") #change title
+plt.xlabel("Wavelength(nm)")
+plt.ylabel("Absorbance")
+plt.scatter(xdata, t0, s=3)
+plt.scatter(xdata, t30, s=3)
+plt.scatter(xdata, t60, s=3)
+plt.scatter(xdata, t90, s=3)
+plt.scatter(xdata, t120, s=3)
+plt.scatter(xdata, t150, s=3)
+plt.scatter(xdata, t180, s=3)
+plt.scatter(xdata, t210, s=3)
+plt.scatter(xdata, t240, s=3)
+plt.scatter(xdata, t270, s=3)
+plt.legend(["30s" , "60s", "90s","120s","150s","180s","210s","240s","270s",], bbox_to_anchor = (1 , 1))
+plt.show()
