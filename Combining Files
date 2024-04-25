@@ -1,0 +1,90 @@
+import os
+import pandas as pd
+import xlsxwriter
+
+def is_file_without_extension(file_name):
+    """Check if the file has no extension."""
+    return os.path.isfile(file_name) and '.' not in os.path.splitext(file_name)[1]
+
+def read_file_without_header_footer(file_path):
+    all_data_numeric = []  # For writing all data to Excel
+    plot_data_numeric = []  # For plotting data up to the first blank line
+    with open(file_path, 'r', encoding='latin-1') as file:
+        next(file)  # Skip the first line (header)
+        for line in file:
+            # Assuming your data is tab-separated
+            row = line.strip().split('\t')
+            if not line.strip():  # If encounter a blank line, stop adding to plot_data_numeric
+                break
+            row_numeric = []
+            for value in row:
+                try:
+                    numeric_value = pd.to_numeric(value)
+                except ValueError:
+                    numeric_value = value  # Keep as string if not numeric
+                row_numeric.append(numeric_value)
+            plot_data_numeric.append(row_numeric)
+
+    # Continue reading the file for all_data_numeric, even after a blank line
+    with open(file_path, 'r', encoding='latin-1') as file:
+        next(file)  # Skip the first line (header) again
+        for line in file:
+            row = line.strip().split('\t')
+            row_numeric = []
+            for value in row:
+                try:
+                    numeric_value = pd.to_numeric(value)
+                except ValueError:
+                    numeric_value = value
+                row_numeric.append(numeric_value)
+            all_data_numeric.append(row_numeric)
+
+    return all_data_numeric, plot_data_numeric
+
+# Get a list of all files in the current directory with no extension
+file_names = [file for file in os.listdir('.') if is_file_without_extension(file)]
+
+# Sort the file names alphabetically
+file_names.sort()
+
+output_file = 'combined_data.xlsx'
+try:
+    writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+except Exception as e:
+    print(f"Error creating Excel writer: {e}")
+    exit()
+
+for input_file in file_names:
+    try:
+        all_data, plot_data = read_file_without_header_footer(input_file)
+        if not all_data:
+            continue
+
+        # Truncate sheet name to max 31 characters for Excel compatibility
+        sheet_name = input_file[:31]
+
+        # Convert all data to DataFrame and write to the Excel sheet
+        df_all = pd.DataFrame(all_data)
+        df_all.to_excel(writer, sheet_name=sheet_name, index=False, header=False)
+
+        # Only proceed with chart creation if plot_data is available
+        if plot_data:
+            df_plot = pd.DataFrame(plot_data)
+            workbook = writer.book
+            worksheet = writer.sheets[sheet_name]
+
+            chart = workbook.add_chart({'type': 'scatter'})
+            # Adjust the series to use df_plot length for plotting
+            chart.add_series({
+                'name': [sheet_name, 0, 1],
+                'categories': [sheet_name, 2, 0, len(df_plot), 0],
+                'values': [sheet_name, 2, 1, len(df_plot), 1],
+            })
+            worksheet.insert_chart('D2', chart)
+    except Exception as e:
+        print(f"Error processing file {input_file}: {e}")
+
+try:
+    writer.close()  # Correct method to save and close the file
+except Exception as e:
+    print(f"Error saving Excel file: {e}")
