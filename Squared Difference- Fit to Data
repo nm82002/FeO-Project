@@ -1,0 +1,19 @@
+#Deviation Plot for 375 nm
+
+#Plot the difference 375 nm
+plt.figure(1, dpi=120)
+plt.title("375 nm Error") #change title
+plt.xlabel("time(s)")
+plt.ylabel("Difference Squared")
+plt.xlim(-0.1, 10) #change to fit data
+plt.ylim(0,0.00001) #change to fit data
+
+#Define the function 
+def dif(funct375, y375):
+    
+    return (funct375-y375)**2
+
+#evaluate and plot
+difdata=dif(funct375, y375)
+plt.plot(xdata, difdata, label="Difference Squared")
+plt.legend
