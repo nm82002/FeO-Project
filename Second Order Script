@@ -1,0 +1,29 @@
+#Second Order Script for 250 nm Data 601
+
+#Plot the data 250 nm
+plt.figure(1, dpi=120)
+plt.title("250 nm Plot") 
+plt.xlabel("time(s)")
+plt.ylabel("\u0394A")
+plt.xlim(-0.1, 10.1) #change to fit data
+plt.ylim(-0.06,0.01) #change to fit data
+plt.scatter(xdata, y250, s=1, label= "250 nm") #change title to fit data
+
+#Define the function 
+def func(x, k, a0):
+    
+    return -a0/(1+k*x*a0)
+    
+#evaluate and plot
+functdata=func(xdata, 8.81391146, 0.05548164)
+plt.plot(xdata, functdata, label="Model")
+plt.legend
+
+#curve fit data to model
+popt, pcov=curve_fit(func, xdata, y250, bounds=(0, 10))
+perr=np.sqrt(np.diag(pcov))
+print(popt)
+print(perr)
+
+
+plt.show()
