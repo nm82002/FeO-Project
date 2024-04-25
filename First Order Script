@@ -1,0 +1,29 @@
+#First order script for 375
+
+#Plot the data 375 nm
+plt.figure(1, dpi=120)
+plt.title("375 nm Plot") #change title
+plt.xlabel("time(s)")
+plt.ylabel("\u0394A")
+plt.xlim(-0.1, 10.1) #change to fit data
+plt.ylim(0,0.04) #change to fit data
+plt.scatter(xdata, y375, s=1, label= "375 nm") #change label
+
+#Define the function 
+def func(x, k, a0, a1):
+    
+    return a0*np.exp(-k*x)+a1
+    
+#evaluate and plot
+functdata=func(xdata, 0.60303654, 0.03204095, 0.00176388)
+plt.plot(xdata, functdata, label="Model")
+plt.legend
+
+#curve fit data to model
+popt, pcov=curve_fit(func, xdata, y375, bounds=(0, 10)) #adjust y values
+perr=np.sqrt(np.diag(pcov))
+print(popt)
+print(perr)
+
+
+plt.show()
