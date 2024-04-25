@@ -1,0 +1,18 @@
+#import libraries
+import numpy as np
+import pandas as pd
+from pandas import read_csv
+import csv
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+#Import csv data
+dataframe= pd.read_excel(r'C:\Users\mnastassja\Documents\Nastassja New\original\Nastassja\2023-06-01\MCPB.xlsx')
+data=dataframe.values
+
+exampledata=np.array(data[1:], dtype=np.single)
+xdata=exampledata[:,0]
+y500=exampledata[:,5]
+y800=exampledata[:,11]
+y250=exampledata[:,13]
+y375=exampledata[:,18]
