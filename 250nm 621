@@ -1,0 +1,77 @@
+#import libraries
+import numpy as np
+import pandas as pd
+from pandas import read_csv
+import csv
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+#Import csv data
+dataframe= pd.read_excel(r'C:\Users\mnastassja\Documents\Nastassja New\original\Nastassja\2023-06-21\combined_data_621.xlsx')
+df=dataframe.values
+
+#Define Variables
+xdata=df[:,0]
+y250=df[:,7]
+
+
+
+
+#First order script for 250
+
+#Filtering data to only include xdata between 0 and 5 
+mask= (xdata>= 0) & (xdata<= 2)
+xnew=xdata[mask]
+ynew=y250[mask]
+
+#Plot the data 250 nm
+plt.figure(1, dpi=120)
+plt.title("250 nm Plot") #change title
+plt.xlabel("time(s)")
+plt.ylabel("\u0394A")
+plt.xlim(0, 2) #change to fit data
+plt.ylim(-0.1,0) #change to fit data
+plt.scatter(xnew, ynew, s=1, label= "250 nm") #change label
+
+#Define the function 
+def func(x, k, a0, a1):
+    
+    return -a0*np.exp(-k*x)+a1
+    
+#evaluate and plot
+funct250=func(xdata, 2.66344943e-01, 7.62208817e-02, 9.85426833e-18)
+plt.plot(xdata, funct250, label="Model")
+plt.legend
+
+#curve fit data to model
+popt, pcov=curve_fit(func, xnew, ynew, bounds=(0, 4)) #adjust y values
+perr=np.sqrt(np.diag(pcov))
+print(popt)
+print(perr)
+
+
+
+
+#Deviation Plot for 250 nm
+
+#Plot the difference 250 nm
+plt.figure(1, dpi=120)
+plt.title("250 nm Error") #change title
+plt.xlabel("time(s)")
+plt.ylabel("Difference Squared")
+plt.xlim(-0.1, 10) #change to fit data
+plt.ylim(0,0.0006) #change to fit data
+
+#Define the function 
+def dif(funct250, y250):
+    
+    return (funct250-y250)**2
+
+#evaluate and plot
+difdata=dif(funct250, y250)
+plt.plot(xdata, difdata, label="Difference Squared")
+plt.legend
+
+
+
+plt.show()
