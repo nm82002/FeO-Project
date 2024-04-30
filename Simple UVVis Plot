@@ -1,0 +1,16 @@
+exampledata=np.array(data[1:], dtype=np.single)
+xdata=exampledata[:,0]
+ydata=exampledata[:,1]
+
+#Plot Absorbance Spectra
+
+plt.figure(1, dpi=120)
+plt.title("Chen White Absorbance Spectra") #change title
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Absorbance")
+plt.xlim(200, 700) #change to fit data
+plt.ylim(0,2) #change to fit data
+plt.scatter(xdata, ydata, s=1, label= "Fe(II)") #change label
+
+
+plt.show()
