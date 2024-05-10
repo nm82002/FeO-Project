@@ -1,0 +1,25 @@
+#import libraries
+import numpy as np
+import pandas as pd
+from pandas import read_csv
+import csv
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+#Import csv data
+file_name= r'C:\Users\nasta\OneDrive\Documents\Zurich\Chen Group\calculated_spectra_mcpba.xlsx'
+sheet_mcba= 'mcba'
+dataframe1= pd.read_excel(io=file_name, sheet_name=sheet_mcba)
+sheet_mcpba='mcpba'
+dataframe2=pd.read_excel(io=file_name, sheet_name=sheet_mcpba)
+sheet_pdpfech='PDPFe(CH3CN)2'
+dataframe3=pd.read_excel(io=file_name, sheet_name=sheet_pdpfech)
+sheet_pdpfeoo='PDPFe-OOH'
+dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_pdpfeoo)
+
+
+mcba=dataframe1.values
+mcpba=dataframe2.values
+pdpfech=dataframe3.values
+pdpfeoo=dataframe4.values
+
