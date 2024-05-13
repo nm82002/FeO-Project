@@ -23,3 +23,49 @@ mcpba=dataframe2.values
 pdpfech=dataframe3.values
 pdpfeoo=dataframe4.values
 
+
+
+mcba_x = np.array(mcba[:,0], dtype=np.single)
+mcba_y = np.array(mcba[:,1], dtype=np.single)
+mcpba_x = np.array(mcpba[:,0], dtype=np.single)
+mcpba_y = np.array(mcpba[:,1], dtype=np.single)
+pdpfech_x = np.array(pdpfech[:,0], dtype=np.single)
+pdpfech_y = np.array(pdpfech[:,1], dtype=np.single)
+pdpfeoo_x = np.array(pdpfech[:,0], dtype=np.single)
+pdpfeoo_y = np.array(pdpfech[:,1], dtype=np.single)
+print(mcpba_x)
+
+
+from scipy.signal import convolve
+
+sigma=0.4
+
+def gaussian(x, mu, sigma):
+    return np.exp(-((x - mu) / (2 * sigma)) ** 2) / (np.sqrt(2 * np.pi) * sigma)
+
+def apply_gaussian_broadening(x, y, sigma):
+
+    # Calculate the Gaussian function
+    gaussian_kernel = gaussian(mcpba_x, 0, sigma)
+
+    # Convolve the Gaussian kernel with the original data
+    broadened_y = convolve(y, gaussian_kernel, mode='same') / np.sum(gaussian_kernel)
+
+    return broadened_y
+
+
+mcpba_broad=apply_gaussian_broadening(mcpba_x, mcpba_y, 0.4)
+
+
+#Plot Absorbance Spectra
+
+plt.figure(1, dpi=120)
+plt.title("mcpba Calculated Absorbance") #change title
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Absorbance")
+plt.xlim(100, 500) #change to fit data
+plt.ylim(0,2) #change to fit data
+plt.scatter(mcpba_x, mcpba_broad, s=1, label= "Fe(II)") #change label
+
+
+plt.show()
