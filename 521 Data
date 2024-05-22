@@ -1,3 +1,69 @@
+import pandas as pd
+
+def excel_sheets_to_csv(file_path):
+    # Load the Excel file
+    excel_file = pd.ExcelFile(file_path)
+    
+    # Iterate through each sheet in the Excel file
+    for sheet_name in excel_file.sheet_names:
+        # Load the sheet into a DataFrame
+        df = pd.read_excel(file_path, sheet_name=sheet_name)
+        
+        # Generate the CSV file name
+        csv_file_name = f"{sheet_name}.csv"
+        
+        # Save the DataFrame to a CSV file
+        df.to_csv(csv_file_name, index=False)
+        print(f"Saved {csv_file_name}")
+
+# Specify the path to your Excel file
+file_path = r'C:\Users\nasta\OneDrive\Documents\Zurich\Chen Group\combined_absorbance_data.xlsx'
+
+# Call the function
+excel_sheets_to_csv(file_path)
+
+
+import os
+import pandas as pd
+import numpy as np
+
+def csv_files_to_dataframes(directory_path):
+    # Dictionary to hold the NumPy arrays
+    numpy_arrays = {}
+    
+    # Iterate through each file in the directory
+    for file_name in os.listdir(directory_path):
+        # Check if the file is a CSV file
+        if file_name.endswith('.csv'):
+            # Generate the full file path
+            file_path = os.path.join(directory_path, file_name)
+            
+            # Load the CSV file into a DataFrame
+            df = pd.read_csv(file_path)
+            
+            # Convert the DataFrame to a NumPy array
+            array = np.array(df, dtype=np.single)
+            
+            # Use the file name (without extension) as the key in the dictionary
+            key_name = os.path.splitext(file_name)[0]
+            
+            # Store the NumPy array in the dictionary
+            numpy_arrays[key_name] = array
+            
+            print(f"Loaded and converted DataFrame for {file_name} to NumPy array")
+
+    return numpy_arrays
+
+# Specify the path to the directory containing the CSV files
+directory_path = r'C:\Users\nasta\521 Data'
+
+# Call the function and store the resulting NumPy arrays
+numpy_arrays = csv_files_to_dataframes(directory_path)
+
+# Example usage: Access the NumPy array for a specific file
+# array_example = numpy_arrays['sheet1']  # replace 'sheet1' with your actual sheet name
+
+
 #import libraries
 import numpy as np
 import pandas as pd
@@ -6,27 +72,17 @@ import csv
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-#Import csv data
-dataframe= pd.read_excel(r'C:\Users\mnastassja\21May2024\combined_absorbance_data.xlsx')
-data=dataframe.values
+#Plot Absorbance Spectra
 
-sheet_240521 inactive_bc_0p1sec00001= '240521 inactive_bc_0p1sec00001'
-dataframe1= pd.read_excel(io=file_name, sheet_name=sheet_240521 inactive_bc_0p1sec00001)
-sheet_240521 inactive_bc_0p1sec00002='240521 inactive_bc_0p1sec00002'
-dataframe2=pd.read_excel(io=file_name, sheet_name=sheet_240521 inactive_bc_0p1sec00002)
-sheet_240521 inactive_bc_0p1sec00003='240521 inactive_bc_0p1sec00003'
-dataframe3=pd.read_excel(io=file_name, sheet_name=sheet_240521 inactive_bc_0p1sec00003)
-sheet_240521 inactive_bc_0p1sec00006='240521 inactive_bc_0p1sec00006'
-dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_240521 inactive_bc_0p1sec00006)
-sheet_pdpfeoo='PDPFe-OOH'
-dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_pdpfeoo)
-sheet_240521 mix_bc_0p1sec00001='240521 mix_bc_0p1sec00001'
-dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_240521 mix_bc_0p1sec00001)
-sheet_240521 mix_bc_0p1sec00002='240521 mix_bc_0p1sec00002'
-dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_240521 mix_bc_0p1sec00002)
-sheet_pdpfeoo='PDPFe-OOH'
-dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_pdpfeoo)
-sheet_pdpfeoo='PDPFe-OOH'
-dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_pdpfeoo)
-sheet_pdpfeoo='PDPFe-OOH'
-dataframe4=pd.read_excel(io=file_name, sheet_name=sheet_pdpfeoo)
+plt.figure(1, dpi=120)
+plt.title("Inactive Catalyst- Varying Time?") #change title
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Absorbance")
+plt.xlim(450, 700) #change to fit data
+plt.ylim(0,.05) #change to fit data
+plt.plot(numpy_arrays['inactive_bc_0p1sec00001'][:,0], numpy_arrays['inactive_bc_0p1sec00001'][:,1], label= "0.1 sec 00001") #change label
+plt.plot(numpy_arrays['inactive_bc_0p1sec00002'][:,0], numpy_arrays['inactive_bc_0p1sec00002'][:,1], label= "0.1 sec 00002")
+plt.plot(numpy_arrays['inactive_bc_0p1sec00003'][:,0], numpy_arrays['inactive_bc_0p1sec00003'][:,1], label= "0.1 sec 00003")
+plt.plot(numpy_arrays['inactive_bc_0p1sec00006'][:,0], numpy_arrays['inactive_bc_0p1sec00006'][:,1], label= "0.1 sec 00006")
+plt.legend(["00001", "00002", "00003", "00006"], loc="upper left")
+plt.show()
