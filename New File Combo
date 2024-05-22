@@ -1,0 +1,83 @@
+import os
+import pandas as pd
+
+def skip_header_and_parse_data(file_path):
+    data = {}
+    current_property = None
+
+    with open(file_path, 'r') as file:
+        # Skip the first 40 lines
+        for _ in range(40):
+            next(file)
+        
+        for line in file:
+            line = line.strip()
+            
+            # Identify the property section
+            if line in ["Absorbance", "HT", "Count", "Temperature"]:
+                current_property = line
+                data[current_property] = []
+            elif current_property and line:
+                # Parse the data line
+                parts = line.split()
+                if len(parts) == 2:
+                    try:
+                        wavelength, value = int(parts[0]), float(parts[1])
+                        data[current_property].append((wavelength, value))
+                    except ValueError:
+                        continue
+    return data
+
+def combine_data(directory_path):
+    combined_data = {}
+
+    # Iterate over all files in the directory
+    for file_name in os.listdir(directory_path):
+        file_path = os.path.join(directory_path, file_name)
+        if os.path.isfile(file_path) and file_name.endswith('.txt'):
+            file_data = skip_header_and_parse_data(file_path)
+            
+            # Combine data from the current file
+            for property_name, values in file_data.items():
+                if property_name not in combined_data:
+                    combined_data[property_name] = {}
+                
+                for wavelength, value in values:
+                    if wavelength not in combined_data[property_name]:
+                        combined_data[property_name][wavelength] = []
+                    combined_data[property_name][wavelength].append(value)
+    
+    return combined_data
+
+def save_to_excel(combined_data, output_file):
+    with pd.ExcelWriter(output_file) as writer:
+        for property_name, wavelength_data in combined_data.items():
+            # Prepare data for the DataFrame
+            wavelengths = sorted(wavelength_data.keys())
+            avg_values = [sum(wavelength_data[wavelength]) / len(wavelength_data[wavelength]) for wavelength in wavelengths]
+
+            # Create DataFrame
+            df = pd.DataFrame({
+                'Wavelength': wavelengths,
+                'Average Value': avg_values
+            })
+
+            # Write DataFrame to Excel sheet
+            df.to_excel(writer, sheet_name=property_name, index=False)
+
+def main():
+    # Path to the directory containing the text files
+    directory_path = r'C:\Users\mnastassja\21May2024'
+    
+    # Combine data from all files in the directory
+    combined_data = combine_data(directory_path)
+    
+    # Output file path
+    output_file = os.path.join(directory_path, 'combined_data.xlsx')
+    
+    # Save combined data to Excel
+    save_to_excel(combined_data, output_file)
+    print(f"Combined data has been saved to {output_file}")
+
+if __name__ == "__main__":
+    main()
